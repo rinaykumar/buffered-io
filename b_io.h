@@ -1,12 +1,12 @@
 /**************************************************************
-* Class:  CSC-415-0# Summer 2020
-* Name:
-* Student ID:
-* Project: Assignment 2 – Buffered I/O
+* Class:  CSC-415-01 Fall 2020
+* Name: Rinay Kumar
+* Student ID: 913859133
+* Project: Assignment 5 – Buffered I/O
 *
 * File: b_io.h
 *
-* Description:
+* Description: Buffered io module - Now with b_write
 *
 **************************************************************/
 

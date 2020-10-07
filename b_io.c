@@ -1,7 +1,7 @@
 /**************************************************************
-* Class:  CSC-415-0# FALL 2020
-* Name: Robert Bierman
-* Student ID:
+* Class:  CSC-415-01 Fall 2020
+* Name: Rinay Kumar
+* Student ID: 913859133
 * Project: Assignment 5 – Buffered I/O
 *
 * File: b_io.c

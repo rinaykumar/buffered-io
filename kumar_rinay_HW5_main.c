@@ -1,12 +1,12 @@
 /**************************************************************
-* Class:  CSC-415-02 Summer 2020
-* Name: Robert Bierman
-* Student ID:
+* Class:  CSC-415-01 Fall 2020
+* Name: Rinay Kumar
+* Student ID: 913859133
 * Project: Assignment 5 – Buffered I/O
 *
-* File: Bierman_Robert_HW5_main.c
+* File: kumar_rinay_HW5_main.c
 *
-* Description: Driver file to demo b_io - b_write
+* Description: Driver file to b_io - b_write
 *
 **************************************************************/
 #include <stdio.h>

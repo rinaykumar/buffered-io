@@ -34,7 +34,7 @@
 #
 
 
-ROOTNAME=Bierman_Robert_HW
+ROOTNAME=kumar_rinay_HW
 HW=5
 FOPTION=_main
 RUNOPTIONS=DecOfInd.txt Clean.txt
