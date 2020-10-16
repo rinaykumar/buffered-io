@@ -107,7 +107,7 @@ int main (int argc, char * argv[])
 			}
 		
 		// print the line number and line
-	//	printf ("%03d: %s\n", lineCount, buf);
+		printf ("%03d: %s\n", lineCount, buf);
 		++lineCount;
 		}	while (readCount == LENBUF); // when not equal we must be done
 	b_close (ofd);	

@@ -124,9 +124,33 @@ int b_write (int fd, char * buffer, int count)
 	//*** TODO ***:  Write buffered write function to accept the data and # bytes provided
 	//               You must use the Linux System Calls and you must buffer the data
 	//				 in 512 byte chunks and only write in 512 byte blocks.
-	
+	int part1, part2;
+
+	if ((fcbArray[fd].buflen + count) <= BUFSIZE) {
+		memcpy(fcbArray[fd].buf + fcbArray[fd].index, buffer, count);
+		fcbArray[fd].index += count;
+		fcbArray[fd].buflen += count;
+
+	} else {
+		part1 = BUFSIZE - fcbArray[fd].buflen;
+		memcpy(fcbArray[fd].buf + fcbArray[fd].index, buffer, part1);
+		fcbArray[fd].buflen += part1; // 512
+		fcbArray[fd].index += part1; // 512
+		part2 = count - part1; // 13
+
+		if (fcbArray[fd].buflen == BUFSIZE) {
+			write(fcbArray[fd].linuxFd, fcbArray[fd].buf, BUFSIZE);
+		}
+
+		memcpy(fcbArray[fd].buf, buffer+part1, part2);
+		fcbArray[fd].buflen = part2; // 13
+		fcbArray[fd].index = part2; // 13
+	}
+
+	return BUFSIZE;
+
 	//Remove the following line and replace with your buffered write function.
-	return (write(fcbArray[fd].linuxFd, buffer, count));
+	//return (write(fcbArray[fd].linuxFd, buffer, count));
 	}
 
 
@@ -210,6 +234,7 @@ int b_read (int fd, char * buffer, int count)
 // Interface to Close the file	
 void b_close (int fd)
 	{
+	write(fcbArray[fd].linuxFd, fcbArray[fd].buf, fcbArray[fd].buflen);
 	close (fcbArray[fd].linuxFd);		// close the linux file handle
 	free (fcbArray[fd].buf);			// free the associated buffer
 	fcbArray[fd].buf = NULL;			// Safety First
