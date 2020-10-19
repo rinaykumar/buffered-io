@@ -127,42 +127,67 @@ int b_write (int fd, char * buffer, int count)
 	int part1, part2, bytesCopied;
 
 	if (count < BUFSIZE) {
-		if ((fcbArray[fd].buflen + count) <= BUFSIZE) {
+		if ((fcbArray[fd].buflen + count) <= BUFSIZE) {  // Check that our buffer + count doesn't exceed BUFSIZE
+			// Copy count bytes into our buffer 
 			memcpy(fcbArray[fd].buf + fcbArray[fd].index, buffer, count);
+			
+			// Adjust buflen and index
 			fcbArray[fd].index += count;
 			fcbArray[fd].buflen += count;
+			
+			// Set bytes copied
 			bytesCopied = count;
-		} else {
-			part1 = BUFSIZE - fcbArray[fd].buflen;
+		} else { // Our buffer is near full
+			part1 = BUFSIZE - fcbArray[fd].buflen; // Amount to copy
+			
+			// Copy part1 bytes into our buffer
 			memcpy(fcbArray[fd].buf + fcbArray[fd].index, buffer, part1);
-			fcbArray[fd].buflen += part1; // 512
-			fcbArray[fd].index += part1; // 512
-			part2 = count - part1; // 13
+			
+			// Adjust buflen and index
+			fcbArray[fd].buflen += part1; 
+			fcbArray[fd].index += part1; 
+			
+			part2 = count - part1; // Next part to copy
 
+			// If our buffer is full, write to file in BUFSIZE chunk
 			if (fcbArray[fd].buflen == BUFSIZE) {
 				write(fcbArray[fd].linuxFd, fcbArray[fd].buf, BUFSIZE);
 			}
 
+			// Copy next part into our buffer
 			memcpy(fcbArray[fd].buf, buffer+part1, part2);
-			fcbArray[fd].buflen = part2; // 13
-			fcbArray[fd].index = part2; // 13
+			
+			// Adjust buflen and index
+			fcbArray[fd].buflen = part2;
+			fcbArray[fd].index = part2;
+			
+			// Set bytes copied
 			bytesCopied = part1 + part2;
 		}
-	} else {
-		int amountToCopy = BUFSIZE-fcbArray[fd].buflen;
+	} else { // Count is greater than BUFSIZE
+		int amountToCopy = BUFSIZE-fcbArray[fd].buflen; // First amount to copy
+		
+		// Copy first amount to our buffer
 		memcpy(fcbArray[fd].buf + fcbArray[fd].index, buffer, amountToCopy);
 		
+		// Our buffer should be full, so write to file in BUFSIZE chunk
 		write(fcbArray[fd].linuxFd, fcbArray[fd].buf, BUFSIZE);
 		
-		int leftOver1 = count - amountToCopy;
-		int blocks = leftOver1 / BUFSIZE;
+		int leftOver1 = count - amountToCopy; // Bytes leftover after write
+		int blocks = leftOver1 / BUFSIZE; // To determine next write amount
 		
+		// Write to file directly from caller's buffer in blocks*BUFSIZE chunk
 		int bytesWritten = write(fcbArray[fd].linuxFd, buffer+amountToCopy, blocks*BUFSIZE);
 		
-		int leftOver2 = count - amountToCopy - bytesWritten;
+		int leftOver2 = count - amountToCopy - bytesWritten; // Bytes leftover after second write
+		
+		// Copy leftover bytes into our buffer
 		memcpy(fcbArray[fd].buf, buffer+(count-leftOver2), leftOver2);
 		
+		// Adjust buflen and index
 		fcbArray[fd].buflen = fcbArray[fd].index = leftOver2;
+		
+		// Set bytes copied
 		bytesCopied = amountToCopy + leftOver2;
 	}
 
@@ -252,7 +277,7 @@ int b_read (int fd, char * buffer, int count)
 // Interface to Close the file	
 void b_close (int fd)
 	{
-	write(fcbArray[fd].linuxFd, fcbArray[fd].buf, fcbArray[fd].buflen);
+	write(fcbArray[fd].linuxFd, fcbArray[fd].buf, fcbArray[fd].buflen); // Write last bytes left in buffer
 	close (fcbArray[fd].linuxFd);		// close the linux file handle
 	free (fcbArray[fd].buf);			// free the associated buffer
 	fcbArray[fd].buf = NULL;			// Safety First
